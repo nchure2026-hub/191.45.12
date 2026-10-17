@@ -13,7 +13,6 @@ type DetectorConstructor = new (options:{formats:string[]})=>DetectorLike;
 function localToday(timezone:string) {
   return new Intl.DateTimeFormat("en-CA",{timeZone:timezone,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 }
-function localDateTime(timezone:string,hour:string) { return localToday(timezone)+"T"+hour; }
 
 export default function BadgeScanner({companyId,employees,today}:{companyId:string;employees:Employee[];today:string}) {
   const [manualCode,setManualCode] = useState("");
@@ -94,7 +93,7 @@ export default function BadgeScanner({companyId,employees,today}:{companyId:stri
   const timezone=selected?.timezone||"Asia/Kolkata";
   const selectedToday=selected?localToday(timezone):today;
   useEffect(()=>{ if(selected){ const day=localToday(selected.timezone||"Asia/Kolkata"); setWorkDate(day); setCheckInLocal(day+"T08:00"); setCheckOutLocal(day+"T17:00"); } },[selected?.id,selected?.timezone]);
-  const nextDay=selectedToday ? (()=>{const [y,m,d]=selectedToday.split("-").map(Number);const date=new Date(Date.UTC(y,m-1,d+1));return date.getUTCFullYear()+"-"+String(date.getUTCMonth()+1).padStart(2,"0")+"-"+String(date.getUTCDate()).padStart(2,"0");})() : today;
+  const nextDay=workDate ? (()=>{const [y,m,d]=selectedToday.split("-").map(Number);const date=new Date(Date.UTC(y,m-1,d+1));return date.getUTCFullYear()+"-"+String(date.getUTCMonth()+1).padStart(2,"0")+"-"+String(date.getUTCDate()).padStart(2,"0");})() : today;
 
   return <div className="space-y-5">
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
