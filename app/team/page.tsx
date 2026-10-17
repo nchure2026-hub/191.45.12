@@ -60,13 +60,13 @@ export default async function TeamPage({ searchParams }: Props) {
       const admin = createAdminClient();
       const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
       if (error) keyStatusError = true;
-      else emailByUser = new Map((data?.users ?? []).map((item) => [item.id, item.email || ""]));
+      else emailByUser = new Map<string, string>((data?.users ?? []).map((item): [string, string] => [item.id, item.email || ""]));
       const [{ data: plantAssignments }, { data: departmentAssignments }] = await Promise.all([
         admin.from("user_plant_assignments").select("user_id,plant_id").eq("company_id", currentProfile.company_id),
         admin.from("user_department_assignments").select("user_id,department_id").eq("company_id", currentProfile.company_id),
       ]);
-      plantByUser = new Map((plantAssignments ?? []).map((item) => [item.user_id, plantsRows.find((plant) => plant.id === item.plant_id)?.name || "Assigned plant"]));
-      departmentByUser = new Map((departmentAssignments ?? []).map((item) => [item.user_id, departmentRows.find((department) => department.id === item.department_id)?.name || "Assigned department"]));
+      plantByUser = new Map<string, string>((plantAssignments ?? []).map((item): [string, string] => [item.user_id, plantsRows.find((plant) => plant.id === item.plant_id)?.name || "Assigned plant"]));
+      departmentByUser = new Map<string, string>((departmentAssignments ?? []).map((item): [string, string] => [item.user_id, departmentRows.find((department) => department.id === item.department_id)?.name || "Assigned department"]));
     } catch {
       keyStatusError = true;
     }
