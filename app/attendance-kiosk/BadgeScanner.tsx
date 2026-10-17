@@ -21,6 +21,9 @@ export default function BadgeScanner({companyId,employees,today}:{companyId:stri
   const [scanning,setScanning] = useState(false);
   const [starting,setStarting] = useState(false);
   const [scanError,setScanError] = useState("");
+  const [workDate,setWorkDate] = useState(today);
+  const [checkInLocal,setCheckInLocal] = useState(today+"T08:00");
+  const [checkOutLocal,setCheckOutLocal] = useState(today+"T17:00");
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream|null>(null);
   const frameRef = useRef<number|null>(null);
@@ -33,7 +36,7 @@ export default function BadgeScanner({companyId,employees,today}:{companyId:stri
     if(videoRef.current) videoRef.current.srcObject=null;
     setScanning(false);
   }
-  useEffect(()=>()=>streamRef.current?.getTracks().forEach(track=>track.stop()),[]);
+  useEffect(()=>()=>{ if(frameRef.current!==null) cancelAnimationFrame(frameRef.current); streamRef.current?.getTracks().forEach(track=>track.stop()); },[]);
 
   function selectFromQr(rawValue:string) {
     const badge=parseEmployeeBadge(rawValue);
@@ -90,6 +93,7 @@ export default function BadgeScanner({companyId,employees,today}:{companyId:stri
 
   const timezone=selected?.timezone||"Asia/Kolkata";
   const selectedToday=selected?localToday(timezone):today;
+  useEffect(()=>{ if(selected){ const day=localToday(selected.timezone||"Asia/Kolkata"); setWorkDate(day); setCheckInLocal(day+"T08:00"); setCheckOutLocal(day+"T17:00"); } },[selected?.id,selected?.timezone]);
   const nextDay=selectedToday ? (()=>{const [y,m,d]=selectedToday.split("-").map(Number);const date=new Date(Date.UTC(y,m-1,d+1));return date.getUTCFullYear()+"-"+String(date.getUTCMonth()+1).padStart(2,"0")+"-"+String(date.getUTCDate()).padStart(2,"0");})() : today;
 
   return <div className="space-y-5">
@@ -105,10 +109,10 @@ export default function BadgeScanner({companyId,employees,today}:{companyId:stri
       <form action={submitAttendanceCorrection} className="grid gap-4 p-5 sm:grid-cols-2">
         <input type="hidden" name="employee_id" value={selected.id}/>
         <input type="hidden" name="employee_code" value={selected.employee_code}/>
-        <label className="block text-xs font-semibold text-slate-600">Work date<input type="date" name="work_date" required max={selectedToday} defaultValue={selectedToday} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
+        <label className="block text-xs font-semibold text-slate-600">Work date<input type="date" name="work_date" required max={selectedToday} value={workDate} onChange={event=>{const day=event.target.value;setWorkDate(day);setCheckInLocal(day+"T08:00");setCheckOutLocal(day+"T17:00");}} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
         <div className="rounded-xl bg-blue-50 p-3 text-xs leading-5 text-blue-900"><ShieldCheck size={15} className="mb-1"/> Camera unavailable fallback. This creates a <strong>pending correction request</strong>; it does not record attendance automatically.</div>
-        <label className="block text-xs font-semibold text-slate-600">Proposed check-in (plant local time)<input type="datetime-local" name="proposed_check_in" required defaultValue={localDateTime(timezone,"08:00")} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
-        <label className="block text-xs font-semibold text-slate-600">Proposed check-out (plant local time)<input type="datetime-local" name="proposed_check_out" required defaultValue={localDateTime(timezone,"17:00")} min={selectedToday+"T00:00"} max={nextDay+"T23:59"} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
+        <label className="block text-xs font-semibold text-slate-600">Proposed check-in (plant local time)<input type="datetime-local" name="proposed_check_in" required value={checkInLocal} onChange={event=>setCheckInLocal(event.target.value)} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
+        <label className="block text-xs font-semibold text-slate-600">Proposed check-out (plant local time)<input type="datetime-local" name="proposed_check_out" required value={checkOutLocal} onChange={event=>setCheckOutLocal(event.target.value)} min={workDate+"T00:00"} max={nextDay+"T23:59"} className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
         <label className="block text-xs font-semibold text-slate-600 sm:col-span-2">Reason for camera/attendance fallback<textarea name="reason" required minLength={10} maxLength={500} rows={3} placeholder="Camera permission denied at gate 2; supervisor verified employee ID badge." className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"/></label>
         <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#172B4D] px-4 py-3 text-sm font-bold text-white hover:bg-[#213b66] sm:col-span-2"><CheckCircle2 size={16}/> Submit for HR review</button>
       </form>
