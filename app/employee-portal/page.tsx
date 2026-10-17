@@ -110,8 +110,8 @@ export default async function EmployeePortalPage() {
       };
     });
   const presentDaysThisMonth = new Set([...byDate.entries()].filter(([day, list]) => day.startsWith(today.slice(0, 7)) && list.some((item) => item.punch_type === "check_in")).map(([day]) => day)).size;
-  const displayName = employee.full_name || profile.full_name || user.email || "Employee";
-  const initials = displayName.split(/\\s+/).map((part) => part[0]).slice(0,2).join("").toUpperCase();
+  const displayName: string = employee.full_name || profile.full_name || user.email || "Employee";
+  const initials = displayName.split(/\\s+/).map((part: string) => part[0]).slice(0,2).join("").toUpperCase();
   const todayLabel = new Intl.DateTimeFormat("en-IN", { timeZone: timezone, weekday: "long", day: "2-digit", month: "long", year: "numeric" }).format(new Date());
 
   return (
