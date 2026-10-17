@@ -33,7 +33,7 @@ create table if not exists public.employees (
  created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
  unique(company_id, employee_code), unique(id, company_id),
  foreign key (plant_id, company_id) references public.plants(id, company_id) on delete restrict,
- foreign key (department_id, company_id) references public.departments(id, company_id) on delete set null
+ foreign key (department_id, company_id) references public.departments(id, company_id) on delete restrict
 );
 create table if not exists public.user_profiles (
  id uuid primary key references auth.users(id) on delete cascade,
@@ -41,7 +41,7 @@ create table if not exists public.user_profiles (
  full_name text not null, role public.app_role not null default 'employee',
  employee_id uuid, active boolean not null default true,
  created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
- foreign key (employee_id, company_id) references public.employees(id, company_id) on delete set null
+ foreign key (employee_id, company_id) references public.employees(id, company_id) on delete restrict
 );
 do $$ begin
  if not exists (select 1 from pg_constraint where conname='employees_supervisor_company_fk') then
