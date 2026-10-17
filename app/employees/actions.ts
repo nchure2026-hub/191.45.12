@@ -79,12 +79,13 @@ export async function deactivateEmployee(formData: FormData) {
   if (!id.success) redirect("/employees?error=invalid");
 
   const { supabase, profile } = await getAuthorizedContext();
-  const { error, count } = await supabase.from("employees")
-    .update({ employment_status: "inactive" }, { count: "exact" })
+  const { data, error } = await supabase.from("employees")
+    .update({ employment_status: "inactive" })
     .eq("id", id.data)
-    .eq("company_id", profile.company_id);
+    .eq("company_id", profile.company_id)
+    .select("id");
 
   if (error) redirect(error.code === "42501" ? "/employees?error=forbidden" : "/employees?error=save");
-  if (count === 0) redirect("/employees?error=notfound");
+  if (!data?.length) redirect("/employees?error=notfound");
   redirect("/employees?success=deactivated");
 }
