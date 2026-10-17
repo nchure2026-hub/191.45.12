@@ -9,6 +9,25 @@ function localDate(timezone: string) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+function zonedMidnight(date: string, timezone: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  const guess = Date.UTC(year, month - 1, day);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date(guess));
+  const value = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+  const localAsUtc = Date.UTC(value("year"), value("month") - 1, value("day"), value("hour"), value("minute"), value("second"));
+  return new Date(guess - (localAsUtc - guess));
+}
+
+function localDayBounds(date: string, timezone: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  const nextDate = new Date(Date.UTC(year, month - 1, day + 1));
+  const next = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, "0")}-${String(nextDate.getUTCDate()).padStart(2, "0")}`;
+  return { start: zonedMidnight(date, timezone).toISOString(), end: zonedMidnight(next, timezone).toISOString() };
+}
+
 function formatTime(value: string | null, timezone: string) {
   if (!value) return "—";
   return new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: timezone }).format(new Date(value));
@@ -32,11 +51,12 @@ export default async function DashboardPage() {
   const { data: company } = await supabase.from("companies").select("name, timezone").eq("id", profile.company_id).maybeSingle();
   const timezone = company?.timezone || "Asia/Kolkata";
   const today = localDate(timezone);
+  const dayBounds = localDayBounds(today, timezone);
   const isEmployee = profile.role === "employee";
   const [employeeCountResult, summaryResult, punchResult, leaveResult, correctionResult, shiftResult, plantResult] = await Promise.all([
     supabase.from("employees").select("id", { count: "exact", head: true }).eq("company_id", profile.company_id).eq("employment_status", "active"),
     supabase.from("daily_attendance_summaries").select("id, employee_id, work_date, first_check_in, last_check_out, worked_minutes, late_minutes, overtime_minutes, status").eq("company_id", profile.company_id).eq("work_date", today).order("first_check_in", { ascending: false }),
-    supabase.from("attendance_punches").select("id, employee_id, punch_type, punched_at, source").eq("company_id", profile.company_id).gte("punched_at", `${today}T00:00:00+05:30`).lte("punched_at", `${today}T23:59:59+05:30`).order("punched_at", { ascending: false }).limit(8),
+    supabase.from("attendance_punches").select("id, employee_id, punch_type, punched_at, source").eq("company_id", profile.company_id).gte("punched_at", dayBounds.start).lt("punched_at", dayBounds.end).order("punched_at", { ascending: false }).limit(8),
     supabase.from("leave_requests").select("id", { count: "exact", head: true }).eq("company_id", profile.company_id).eq("status", "pending"),
     supabase.from("attendance_correction_requests").select("id", { count: "exact", head: true }).eq("company_id", profile.company_id).eq("status", "pending"),
     supabase.from("shifts").select("id", { count: "exact", head: true }).eq("company_id", profile.company_id).eq("active", true),
