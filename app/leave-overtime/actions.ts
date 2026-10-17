@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
-const date = z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/).refine((value) => !Number.isNaN(Date.parse(value + "T00:00:00Z")));
+const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => !Number.isNaN(Date.parse(value + "T00:00:00Z")));
 const leaveSchema = z.object({
   employee_id: z.string().uuid(),
   start_date: date,
@@ -21,7 +21,7 @@ const reviewSchema = z.object({
 const overtimeReviewSchema = z.object({
   request_id: z.string().uuid(),
   status: z.enum(["approved", "rejected"]),
-  approved_minutes: z.union([z.string().regex(/^\\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
+  approved_minutes: z.union([z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
   reviewer_comment: z.string().trim().max(500).optional(),
 });
 
