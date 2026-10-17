@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AlertTriangle, CheckCircle2, KeyRound, Plus, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Factory, KeyRound, Plus, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createPlant, createWorkerAccount } from "./actions";
 
