@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
-const dateValue = z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/);
+const dateValue = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const codeValue = z.string().trim().min(2).max(32).transform(v => v.toUpperCase()).refine(v => /^[A-Z0-9_-]+$/.test(v));
 const idValue = z.string().uuid();
 type Role = "super_admin" | "hr_manager" | "plant_manager" | "department_supervisor" | "employee";
