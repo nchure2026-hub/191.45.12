@@ -12,7 +12,7 @@ const shiftSchema = z.object({
   end_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   break_minutes: z.coerce.number().int().min(0).max(600),
   grace_minutes: z.coerce.number().int().min(0).max(240),
-  overtime_after_minutes: z.union([z.coerce.number().int().min(0).max(1440), z.literal("")]).optional(),
+  overtime_after_minutes: z.union([z.string().regex(/^\\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
 });
 
 async function getContext() {
@@ -78,7 +78,8 @@ export async function deactivateShift(formData: FormData) {
   const id = z.string().uuid().safeParse(formData.get("shift_id"));
   if (!id.success) redirect("/shifts?error=invalid");
   const { supabase, profile } = await getContext();
-  const { error } = await supabase.from("shifts").update({ active: false }).eq("id", id.data).eq("company_id", profile.company_id);
+  const { data, error } = await supabase.from("shifts").update({ active: false }).eq("id", id.data).eq("company_id", profile.company_id).select("id");
   if (error) redirect(error.code === "42501" ? "/shifts?error=forbidden" : "/shifts?error=save");
+  if (!data?.length) redirect("/shifts?error=notfound");
   redirect("/shifts?success=deactivated");
 }
