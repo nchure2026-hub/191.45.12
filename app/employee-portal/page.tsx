@@ -120,7 +120,7 @@ export default async function EmployeePortalPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#067647] font-black text-white">IA</div><div><p className="font-bold text-slate-900">IAMS Employee</p><p className="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-700">Attendance portal</p></div></div>
           <div className="hidden text-right sm:block"><p className="text-sm font-bold">{displayName}</p><p className="text-xs text-slate-500">{employee.employee_code} · {company?.name || "Company"}</p></div>
-          <form action="/auth/signout" method="post"><button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50"><LogOut size={15}/> Sign out</button></form>
+          <form action="/auth/signout?portal=employee" method="post"><button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50"><LogOut size={15}/> Sign out</button></form>
         </div>
       </header>
 
