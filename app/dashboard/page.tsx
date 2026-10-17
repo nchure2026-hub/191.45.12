@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, AlertTriangle, ArrowUpRight, CalendarClock, CheckCircle2, Clock3, Factory, LogOut, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { Activity, AlertTriangle, ArrowUpRight, CalendarClock, CheckCircle2, Clock3, Factory, LogOut, ShieldCheck, UserCog, UserPlus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 function localDate(timezone: string) {
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
       <p className="mb-2 mt-8 px-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">Workspace</p>
       <div className="flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-700"><Activity size={18}/> Overview</div>
       <p className="mb-2 mt-7 px-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">Workforce</p>
-      <Link href="/employees" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><Users size={18}/> Employee directory</Link><Link href="/worker-accounts" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><UserPlus size={18}/> Worker accounts</Link><Link href="/employee-portal/login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"><Activity size={18}/> Worker attendance portal</Link>
+      <Link href="/employees" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><Users size={18}/> Employee directory</Link><Link href="/worker-accounts" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><UserPlus size={18}/> Worker accounts</Link><Link href="/employee-portal/login" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"><Activity size={18}/> Worker attendance portal</Link>{profile.role === "super_admin" && <Link href="/team-accounts" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><UserCog size={18}/> Team accounts / HR</Link>}
       <div className="mt-2 space-y-1 text-sm text-slate-400"><Link href="/shifts" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><CalendarClock size={18}/> Shift templates</Link><p className="rounded-lg px-3 py-2">Roster assignments · Phase 3</p><p className="rounded-lg px-3 py-2">Leave & overtime · Phase 3</p><p className="rounded-lg px-3 py-2">Reports & device imports · Phase 4</p></div>
       <div className="mt-auto rounded-xl bg-slate-50 p-3"><div className="flex items-center gap-2 text-xs font-semibold text-slate-600"><ShieldCheck size={15}/> Protected workspace</div><p className="mt-2 text-[11px] leading-5 text-slate-500">Company-scoped data access is enforced by Supabase RLS.</p></div>
     </aside>
