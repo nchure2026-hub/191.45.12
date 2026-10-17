@@ -5,6 +5,12 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+const departmentSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  code: z.string().trim().min(2).max(20).transform((value) => value.toUpperCase()).refine((value) => /^[A-Z0-9_-]+$/.test(value)),
+  plant_id: z.string().uuid(),
+});
+
 const teamSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
   job_title: z.string().trim().min(2).max(100),
@@ -27,6 +33,34 @@ async function getSuperAdminContext() {
     redirect("/dashboard?error=forbidden");
   }
   return { supabase, profile };
+}
+
+export async function createDepartment(formData: FormData) {
+  const parsed = departmentSchema.safeParse({
+    name: formData.get("name"),
+    code: formData.get("code"),
+    plant_id: formData.get("plant_id"),
+  });
+  if (!parsed.success) redirect("/team-accounts?error=department_invalid");
+  const { supabase, profile } = await getSuperAdminContext();
+  const { data: plant } = await supabase.from("plants").select("id")
+    .eq("id", parsed.data.plant_id)
+    .eq("company_id", profile.company_id)
+    .eq("active", true)
+    .maybeSingle();
+  if (!plant) redirect("/team-accounts?error=plant_scope");
+  const { error } = await supabase.from("departments").insert({
+    company_id: profile.company_id,
+    plant_id: parsed.data.plant_id,
+    name: parsed.data.name,
+    code: parsed.data.code,
+    active: true,
+  });
+  if (error) {
+    if (error.code === "23505") redirect("/team-accounts?error=department_duplicate");
+    redirect("/team-accounts?error=department_save");
+  }
+  redirect("/team-accounts?success=department");
 }
 
 export async function createTeamAccount(formData: FormData) {
