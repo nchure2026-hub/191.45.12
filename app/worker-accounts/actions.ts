@@ -193,3 +193,70 @@ export async function recordEmployeePunch(
   }
   return { ok: true, message: "Attendance recorded successfully." };
 }
+
+
+export async function deactivateWorker(formData: FormData) {
+  const parsed = z.object({ employee_id: z.string().uuid() }).safeParse({
+    employee_id: formData.get("employee_id"),
+  });
+  if (!parsed.success) redirect("/worker-accounts?error=worker_invalid");
+
+  const { profile } = await getAdminContext();
+
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch {
+    redirect("/worker-accounts?error=service_config");
+  }
+
+  const { data: employee, error: employeeReadError } = await admin.from("employees")
+    .select("id,full_name,employment_status")
+    .eq("id", parsed.data.employee_id)
+    .eq("company_id", profile.company_id)
+    .maybeSingle();
+
+  if (employeeReadError || !employee) redirect("/worker-accounts?error=worker_not_found");
+  if (employee.employment_status !== "active") redirect("/worker-accounts?error=worker_already_inactive");
+
+  const { data: linkedProfiles, error: profileReadError } = await admin.from("user_profiles")
+    .select("id")
+    .eq("company_id", profile.company_id)
+    .eq("employee_id", employee.id)
+    .eq("role", "employee");
+
+  if (profileReadError) redirect("/worker-accounts?error=worker_profile_read");
+
+  // Soft-delete: preserve attendance/leave/roster/audit history, but remove the
+  // employee from active operations and disable every linked IAMS employee profile.
+  const { data: updatedEmployee, error: employeeUpdateError } = await admin.from("employees")
+    .update({ employment_status: "inactive" })
+    .eq("id", employee.id)
+    .eq("company_id", profile.company_id)
+    .eq("employment_status", "active")
+    .select("id")
+    .maybeSingle();
+
+  if (employeeUpdateError || !updatedEmployee) {
+    redirect(employeeUpdateError?.code === "42501" ? "/worker-accounts?error=forbidden" : "/worker-accounts?error=worker_deactivate");
+  }
+
+  if (linkedProfiles?.length) {
+    const { error: profileUpdateError } = await admin.from("user_profiles")
+      .update({ active: false })
+      .eq("company_id", profile.company_id)
+      .eq("employee_id", employee.id)
+      .eq("role", "employee");
+
+    if (profileUpdateError) {
+      // Best-effort rollback so employee status and portal access remain consistent.
+      await admin.from("employees")
+        .update({ employment_status: "active" })
+        .eq("id", employee.id)
+        .eq("company_id", profile.company_id);
+      redirect("/worker-accounts?error=worker_access_disable");
+    }
+  }
+
+  redirect("/worker-accounts?success=worker_deleted");
+}
