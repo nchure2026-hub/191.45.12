@@ -12,6 +12,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Private Supabase Storage bucket for face-photo evidence and a server-validated transactional attendance punch function with allowed-transition checks.
 - Company-scoped RLS policies and role-aware database policies.
 - Industrial Operations workspace at `/operations`: production-unit setup, contractor directory, contract-worker register, visitor gate-in/gate-out, plant holiday calendar and attendance-device inventory, with role-gated server actions and company/plant/department validation.
+- HR/Super Admin attendance summary workflow at `/reports`: timezone-aware shift windows (including overnight shifts), roster-aware daily summary calculation, approved full-day leave/holiday/weekly-off handling, missing/inconsistent punch review status, recalculation, and authenticated CSV export limited to 31 days per request.
 - Additive schema for production units, attendance policies, holidays, contractors, contract workers, visitors, devices, import jobs and notifications.
 - Pure attendance calculation module that reports missing/inconsistent punches instead of silently fabricating them.
 - Environment-variable example without credentials.
@@ -21,7 +22,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Approved calculation-to-summary pipeline and shift/overnight-aware payroll-grade calculations. Worker punches are transactionally validated, but daily summary payroll processing is still not completed.
 - CSV upload workflow, actual biometric/RFID hardware integration, and automated facial identity matching. The worker portal currently captures a photo for attendance evidence; it does not claim to match a face against an enrolled biometric template.
 - QR badge issuance/scanning and the camera-unavailable employee-ID fallback are not implemented yet. Do not use employee codes alone as proof of identity; the planned fallback must preserve authentication and route exceptions for review.
-- Payroll-grade summary calculation, attendance reports/exports, employee edit/transfer screens, and automated notifications remain incomplete.
+- Calculation version 1 is reviewable and not yet payroll-certified; partial-day leave, holiday-work pay rules, complex split shifts, and formal policy validation remain incomplete. Employee edit/transfer screens and automated notifications remain incomplete.
 - Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 - Custom email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 
