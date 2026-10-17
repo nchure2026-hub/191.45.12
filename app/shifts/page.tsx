@@ -12,6 +12,7 @@ const errors: Record<string, string> = {
   duplicate: "That shift code already exists in this company.",
   forbidden: "Your role does not permit this action.",
   save: "The shift could not be saved. Check database permissions and required fields.",
+  notfound: "The shift was not found or is outside your access scope.",
 };
 const successes: Record<string, string> = { created: "Shift created. Its overnight flag and scheduled duration were calculated from the configured times.", deactivated: "Shift deactivated. Historical assignments remain preserved." };
 function timeLabel(value: string) { return value.slice(0, 5); }
