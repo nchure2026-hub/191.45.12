@@ -21,5 +21,7 @@ describe("timezone-aware shift windows", () => {
 
   it("rejects malformed dates", () => {
     assert.throws(() => zonedLocalTimeToUtc("17-10-2026", "08:00", "Asia/Kolkata"));
+    assert.throws(() => zonedLocalTimeToUtc("2026-02-31", "08:00", "Asia/Kolkata"));
+    assert.throws(() => zonedLocalTimeToUtc("2026-10-17", "25:00", "Asia/Kolkata"));
   });
 });
