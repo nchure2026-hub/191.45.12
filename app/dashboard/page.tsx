@@ -52,8 +52,8 @@ export default async function DashboardPage() {
   const late = summaries.filter((row) => (row.late_minutes ?? 0) > 0).length;
   const overtimeMinutes = summaries.reduce((total, row) => total + (row.overtime_minutes ?? 0), 0);
   const pending = (leaveResult.count ?? 0) + (correctionResult.count ?? 0);
-  const displayName = profile.full_name || user.email || "IAMS User";
-  const initials = displayName.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+  const displayName: string = profile.full_name || user.email || "IAMS User";
+  const initials = displayName.split(/\s+/).map((part: string) => part[0]).slice(0, 2).join("").toUpperCase();
   const titleDate = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: timezone }).format(new Date());
 
   return <main className="min-h-screen bg-slate-50 text-slate-900">
