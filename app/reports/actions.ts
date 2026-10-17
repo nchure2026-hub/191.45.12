@@ -30,7 +30,7 @@ export async function calculateDailySummaries(formData: FormData) {
     supabase.from("shifts").select("id,plant_id,start_time,end_time,overnight,break_minutes,grace_minutes,scheduled_minutes,overtime_after_minutes,active").eq("company_id",profile.company_id).eq("active",true).limit(1000),
     supabase.from("plants").select("id,timezone").eq("company_id",profile.company_id).eq("active",true).limit(500),
     supabase.from("holidays").select("plant_id,holiday_date").eq("company_id",profile.company_id).eq("holiday_date",workDate),
-    supabase.from("leave_requests").select("employee_id,partial_day").eq("company_id",profile.company_id).eq("status","approved").eq("partial_day",false).lte("start_date",workDate).gte("end_date",workDate).limit(5000),
+    supabase.from("leave_requests").select("employee_id,partial_day").eq("company_id",profile.company_id).eq("status","approved").lte("start_date",workDate).gte("end_date",workDate).limit(5000),
   ]);
   if (employeeError || assignmentError || shiftError || holidayError || leaveError) redirect("/reports?error=read_failed");
 
@@ -70,7 +70,8 @@ export async function calculateDailySummaries(formData: FormData) {
   }
 
   const holidayRows = holidays ?? [];
-  const leaveEmployeeIds = new Set((leaves ?? []).map(leave => leave.employee_id));
+  const fullDayLeaveEmployeeIds = new Set((leaves ?? []).filter(leave => !leave.partial_day).map(leave => leave.employee_id));
+  const partialDayLeaveEmployeeIds = new Set((leaves ?? []).filter(leave => leave.partial_day).map(leave => leave.employee_id));
   const summaries = [];
   let conflicts = 0;
   let unassigned = 0;
@@ -94,7 +95,9 @@ export async function calculateDailySummaries(formData: FormData) {
     const employeePunches = (punchesByEmployee.get(employee.id) ?? [])
       .filter(punch => new Date(punch.at).getTime() >= windowStart && new Date(punch.at).getTime() <= windowEnd);
     const isHoliday = holidayRows.some(holiday => holiday.plant_id === null || holiday.plant_id === employee.plant_id);
-    const onLeave = leaveEmployeeIds.has(employee.id);
+    const onFullDayLeave = fullDayLeaveEmployeeIds.has(employee.id);
+    const onPartialDayLeave = partialDayLeaveEmployeeIds.has(employee.id);
+    const onLeave = onFullDayLeave || onPartialDayLeave;
     const isWeeklyOff = (employee.weekly_off_days ?? []).includes(new Date(workDate+"T12:00:00Z").getUTCDay());
 
     let status: string;
@@ -102,7 +105,8 @@ export async function calculateDailySummaries(formData: FormData) {
     let lastCheckOut: string | null = null;
     let workedMinutes = 0, lateMinutes = 0, earlyDepartureMinutes = 0, overtimeMinutes = 0;
     if (employeePunches.length === 0 && isHoliday) status = "holiday";
-    else if (employeePunches.length === 0 && onLeave) status = "on_leave";
+    else if (employeePunches.length === 0 && onFullDayLeave) status = "on_leave";
+    else if (employeePunches.length === 0 && onPartialDayLeave) status = "incomplete";
     else if (employeePunches.length === 0 && isWeeklyOff) status = "weekly_off";
     else {
       const result = calculateAttendance(employeePunches,{
