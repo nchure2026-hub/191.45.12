@@ -68,7 +68,7 @@ describe("calculateAttendance", () => {
       scheduledMinutes: 480,
       unpaidBreakMinutes: 0,
     });
-    assert.equal(result.status, "present");
+    assert.equal(result.status, "exception");
     assert.ok(result.exceptions.some((message) => message.includes("Missing break-end")));
   });
 });
