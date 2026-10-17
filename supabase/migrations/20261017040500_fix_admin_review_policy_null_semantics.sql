@@ -1,0 +1,12 @@
+drop policy if exists leave_review_scoped on public.leave_requests;
+create policy leave_review_scoped on public.leave_requests for update to authenticated
+using (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and (select private.current_role()) in ('super_admin','hr_manager','plant_manager','department_supervisor') and status='pending')
+with check (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and reviewed_by=(select auth.uid()) and status in ('approved','rejected'));
+drop policy if exists correction_review_scoped on public.attendance_correction_requests;
+create policy correction_review_scoped on public.attendance_correction_requests for update to authenticated
+using (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and (select private.current_role()) in ('super_admin','hr_manager','plant_manager','department_supervisor') and status='pending')
+with check (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and reviewed_by=(select auth.uid()) and status in ('approved','rejected'));
+drop policy if exists overtime_review_scoped on public.overtime_requests;
+create policy overtime_review_scoped on public.overtime_requests for update to authenticated
+using (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and (select private.current_role()) in ('super_admin','hr_manager','plant_manager','department_supervisor') and status='pending')
+with check (company_id=(select private.current_company_id()) and ((select private.current_employee_id()) is null or employee_id<>(select private.current_employee_id())) and (select private.can_access_employee(employee_id)) and reviewed_by=(select auth.uid()) and status in ('approved','rejected'));
