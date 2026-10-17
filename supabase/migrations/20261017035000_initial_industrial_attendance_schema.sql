@@ -46,7 +46,7 @@ create table if not exists public.user_profiles (
 do $$ begin
  if not exists (select 1 from pg_constraint where conname='employees_supervisor_company_fk') then
   alter table public.employees add constraint employees_supervisor_company_fk
-  foreign key (supervisor_employee_id, company_id) references public.employees(id, company_id) on delete set null;
+  foreign key (supervisor_employee_id, company_id) references public.employees(id, company_id) on delete restrict;
  end if;
 end $$;
 create table if not exists public.shifts (
