@@ -44,6 +44,19 @@ describe("calculateAttendance", () => {
     assert.deepEqual(result.exceptions, []);
   });
 
+  it("marks a scheduled day with no punches as absent", () => {
+    const result = calculateAttendance([], {
+      shiftStart: "2026-10-17T03:00:00.000Z",
+      shiftEnd: "2026-10-17T11:00:00.000Z",
+      graceMinutes: 0,
+      scheduledMinutes: 480,
+      unpaidBreakMinutes: 0,
+    });
+    assert.equal(result.status, "absent");
+    assert.equal(result.firstCheckIn, null);
+    assert.equal(result.lastCheckOut, null);
+  });
+
   it("flags missing checkout instead of inventing one", () => {
     const result = calculateAttendance([{ type: "check_in", at: "2026-10-17T03:00:00.000Z" }], {
       shiftStart: "2026-10-17T03:00:00.000Z",
