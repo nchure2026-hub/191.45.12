@@ -66,7 +66,7 @@ export default async function TeamAccountsPage({ searchParams }: Props) {
     try {
       const admin = createAdminClient();
       const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 500 });
-      emailById = new Map((data?.users ?? []).map((authUser) => [authUser.id, authUser.email || "Email unavailable"]));
+      emailById = new Map<string, string>((data?.users ?? []).map((authUser) => [authUser.id, authUser.email || "Email unavailable"] as const));
     } catch {
       emailById = new Map();
     }
