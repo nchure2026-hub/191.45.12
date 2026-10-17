@@ -11,6 +11,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Separate `/employee-portal/login` and `/employee-portal` worker portal, linked employee credentials provisioned by HR/admin, mobile front-camera selfie capture per punch, check-in/break/check-out flow, and personal attendance history.
 - Private Supabase Storage bucket for face-photo evidence and a server-validated transactional attendance punch function with allowed-transition checks.
 - Company-scoped RLS policies and role-aware database policies.
+- Industrial Operations workspace at `/operations`: production-unit setup, contractor directory, contract-worker register, visitor gate-in/gate-out, plant holiday calendar and attendance-device inventory, with role-gated server actions and company/plant/department validation.
 - Additive schema for production units, attendance policies, holidays, contractors, contract workers, visitors, devices, import jobs and notifications.
 - Pure attendance calculation module that reports missing/inconsistent punches instead of silently fabricating them.
 - Environment-variable example without credentials.
@@ -19,6 +20,8 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Employee editing/transfers, shift editing/assignments, leave/overtime UI and server mutations.
 - Approved calculation-to-summary pipeline and shift/overnight-aware payroll-grade calculations. Worker punches are transactionally validated, but daily summary payroll processing is still not completed.
 - CSV upload workflow, actual biometric/RFID hardware integration, and automated facial identity matching. The worker portal currently captures a photo for attendance evidence; it does not claim to match a face against an enrolled biometric template.
+- QR badge issuance/scanning and the camera-unavailable employee-ID fallback are not implemented yet. Do not use employee codes alone as proof of identity; the planned fallback must preserve authentication and route exceptions for review.
+- Payroll-grade summary calculation, attendance reports/exports, employee edit/transfer screens, and automated notifications remain incomplete.
 - Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 - Custom email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 
