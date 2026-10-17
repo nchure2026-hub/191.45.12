@@ -21,7 +21,6 @@ const errors: Record<string, string> = {
   auth_create: "Could not create the worker sign-in account. Check the email and password, then try again.",
   employee_create: "The Auth account was created but the employee record could not be created. Try again with a new email after checking the employee list.",
   profile_create: "The employee profile could not be linked. The employee was deactivated and the temporary Auth user was removed; check for the employee record before retrying.",
-  worker_invalid: "The selected employee record is not valid. Refresh and try again.",
   worker_not_found: "That employee was not found in this company.",
   worker_already_inactive: "This employee is already inactive.",
   worker_profile_read: "Could not verify the linked worker portal account. No changes were made.",
