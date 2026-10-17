@@ -7,7 +7,13 @@ export function zonedLocalTimeToUtc(date: string, time: string, timezone: string
   if (!dateMatch || !timeMatch) throw new Error("Use YYYY-MM-DD and HH:MM[:SS] values.");
   const [, yearText, monthText, dayText] = dateMatch;
   const [, hourText, minuteText, secondText = "0"] = timeMatch;
-  const target = Date.UTC(Number(yearText), Number(monthText) - 1, Number(dayText), Number(hourText), Number(minuteText), Number(secondText));
+  const year = Number(yearText), month = Number(monthText), day = Number(dayText);
+  const hour = Number(hourText), minute = Number(minuteText), second = Number(secondText);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+  if (calendarDate.getUTCFullYear() !== year || calendarDate.getUTCMonth() !== month - 1 || calendarDate.getUTCDate() !== day || hour > 23 || minute > 59 || second > 59) {
+    throw new Error("Invalid shift date or time.");
+  }
+  const target = Date.UTC(year, month - 1, day, hour, minute, second);
   if (!Number.isFinite(target)) throw new Error("Invalid shift date or time.");
   let candidate = target;
   for (let i = 0; i < 4; i++) {
