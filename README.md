@@ -8,7 +8,8 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Authenticated dashboard that reads company, employee, shift, daily-summary, leave-review, correction-review and raw-punch data from Supabase.
 - Employee directory with scoped search, validated employee creation and safe deactivation (no destructive employee deletion).
 - Shift template creation/deactivation with validated shift times, break/grace policies and automatic overnight detection.
-- Separate `/employee-portal/login` and `/employee-portal` worker portal, linked employee credentials provisioned by HR/admin, mobile front-camera selfie capture per punch, check-in/break/check-out flow, and personal attendance history.
+- Separate `/employee-portal/login` and `/employee-portal` worker portal, linked employee credentials provisioned by HR/admin, mobile front-camera selfie capture per punch, check-in/break/check-out flow, personal attendance history, and printable employee QR ID badge.
+- Authorized `/attendance-kiosk` with QR badge scanning and manual Employee ID lookup for camera-unavailable attendance fallback. The fallback creates a pending attendance-correction request for authorized review; it never writes an automatic attendance punch.
 - Private Supabase Storage bucket for face-photo evidence and a server-validated transactional attendance punch function with allowed-transition checks.
 - Company-scoped RLS policies and role-aware database policies.
 - Industrial Operations workspace at `/operations`: production-unit setup, contractor directory, contract-worker register, visitor gate-in/gate-out, plant holiday calendar and attendance-device inventory, with role-gated server actions and company/plant/department validation.
@@ -21,7 +22,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Employee editing/transfers, shift editing/assignments, leave/overtime UI and server mutations.
 - Approved calculation-to-summary pipeline and shift/overnight-aware payroll-grade calculations. Worker punches are transactionally validated, but daily summary payroll processing is still not completed.
 - CSV upload workflow, actual biometric/RFID hardware integration, and automated facial identity matching. The worker portal currently captures a photo for attendance evidence; it does not claim to match a face against an enrolled biometric template.
-- QR badge issuance/scanning and the camera-unavailable employee-ID fallback are not implemented yet. Do not use employee codes alone as proof of identity; the planned fallback must preserve authentication and route exceptions for review.
+- Automated facial identity matching and liveness detection are not implemented. The current selfie is evidence only, not a face match. QR/Employee ID identifies a record but is not a secret or biometric proof; fallback requests remain pending until an authorized reviewer approves them.
 - Calculation version 1 is reviewable and not yet payroll-certified; partial-day leave, holiday-work pay rules, complex split shifts, and formal policy validation remain incomplete. Employee edit/transfer screens and automated notifications remain incomplete.
 - Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 - Custom email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
