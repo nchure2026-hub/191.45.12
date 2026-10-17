@@ -2,8 +2,8 @@ export type ShiftWindow = { start: Date; end: Date };
 
 /** Convert a wall-clock date/time in an IANA timezone into an absolute instant. */
 export function zonedLocalTimeToUtc(date: string, time: string, timezone: string): Date {
-  const dateMatch = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date);
-  const timeMatch = /^(\\d{2}):(\\d{2})(?::(\\d{2}))?$/.exec(time);
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  const timeMatch = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(time);
   if (!dateMatch || !timeMatch) throw new Error("Use YYYY-MM-DD and HH:MM[:SS] values.");
   const [, yearText, monthText, dayText] = dateMatch;
   const [, hourText, minuteText, secondText = "0"] = timeMatch;
