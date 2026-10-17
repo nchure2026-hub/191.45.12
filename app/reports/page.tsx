@@ -29,7 +29,7 @@ const statusStyle: Record<string,string> = {
 };
 export default async function ReportsPage({searchParams}:Props) {
   const params = await searchParams;
-  const requestedDate = params.date && /^\\d{4}-\\d{2}-\\d{2}$/.test(params.date) ? params.date : null;
+  const requestedDate = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : null;
   const supabase = await createClient();
   const {data:{user}} = await supabase.auth.getUser();
   if (!user) redirect("/login");
