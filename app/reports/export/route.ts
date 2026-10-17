@@ -5,7 +5,7 @@ function csvCell(value: unknown) {
   return '"' + text.replaceAll('"','""') + '"';
 }
 function validDate(value: string | null) {
-  return Boolean(value && /^\\d{4}-\\d{2}-\\d{2}$/.test(value));
+  return Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value));
 }
 
 export async function GET(request: Request) {
