@@ -7,13 +7,14 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Session refresh middleware.
 - Authenticated dashboard that reads company, employee, shift, daily-summary, leave-review, correction-review and raw-punch data from Supabase.
 - Employee directory with scoped search, validated employee creation and safe deactivation (no destructive employee deletion).
+- Shift template creation/deactivation with validated shift times, break/grace policies and automatic overnight detection.
 - Company-scoped RLS policies and role-aware database policies.
 - Additive schema for production units, attendance policies, holidays, contractors, contract workers, visitors, devices, import jobs and notifications.
 - Pure attendance calculation module that reports missing/inconsistent punches instead of silently fabricating them.
 - Environment-variable example without credentials.
 
 ## Not yet production-complete
-- Employee editing/transfers and shift/leave/overtime CRUD screens and server mutations.
+- Employee editing/transfers, shift editing/assignments, leave/overtime UI and server mutations.
 - Approved calculation-to-summary pipeline and transactional punch processing.
 - CSV upload workflow and actual biometric/RFID device integration.
 - Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
