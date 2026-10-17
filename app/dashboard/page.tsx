@@ -62,8 +62,9 @@ export default async function DashboardPage() {
       <div className="mt-8 rounded-xl border border-slate-200 p-3"><div className="flex items-center gap-2 text-xs font-semibold text-slate-500"><Factory size={15}/> Active workspace</div><p className="mt-2 truncate text-sm font-bold">{company?.name || "Company workspace"}</p><p className="mt-1 text-xs text-slate-500">{timezone}</p></div>
       <p className="mb-2 mt-8 px-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">Workspace</p>
       <div className="flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-700"><Activity size={18}/> Overview</div>
-      <p className="mb-2 mt-7 px-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">Coming in next phases</p>
-      <div className="space-y-1 text-sm text-slate-400"><p className="rounded-lg px-3 py-2">Employees & directory</p><p className="rounded-lg px-3 py-2">Shifts & roster</p><p className="rounded-lg px-3 py-2">Leave & overtime</p><p className="rounded-lg px-3 py-2">Reports & device imports</p></div>
+      <p className="mb-2 mt-7 px-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-400">Workforce</p>
+      <Link href="/employees" className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-700"><Users size={18}/> Employee directory</Link>
+      <div className="mt-2 space-y-1 text-sm text-slate-400"><p className="rounded-lg px-3 py-2">Shifts & roster · Phase 3</p><p className="rounded-lg px-3 py-2">Leave & overtime · Phase 3</p><p className="rounded-lg px-3 py-2">Reports & device imports · Phase 4</p></div>
       <div className="mt-auto rounded-xl bg-slate-50 p-3"><div className="flex items-center gap-2 text-xs font-semibold text-slate-600"><ShieldCheck size={15}/> Protected workspace</div><p className="mt-2 text-[11px] leading-5 text-slate-500">Company-scoped data access is enforced by Supabase RLS.</p></div>
     </aside>
     <div className="lg:pl-64">
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-blue-700">Attendance overview</p><h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Good day, {displayName.split(" ")[0]}</h1><p className="mt-2 text-sm text-slate-500">Live records from your authorized company workspace · {today}</p></div><div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"><CalendarClock size={15}/> {timezone}</div></div>
         {isEmployee ? <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">Employee view: your dashboard data is restricted to records permitted for your account.</div> : null}
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Metric label={isEmployee ? "Attendance records today" : "Employees in accessible scope"} value={employeeCountResult.count ?? 0} detail="Count returned under current access policies" icon={Users}/>
+          <Metric label={isEmployee ? "My employee record" : "Employees in accessible scope"} value={employeeCountResult.count ?? 0} detail="Active employee records returned under current access policies" icon={Users}/>
           <Metric label="Present / worked today" value={present} detail="Calculated summaries for this workday" icon={CheckCircle2} tone="green"/>
           <Metric label="Late arrivals" value={late} detail="Summaries with late minutes greater than zero" icon={Clock3} tone="amber"/>
           <Metric label="Pending reviews" value={pending} detail="Leave and regularization requests awaiting review" icon={AlertTriangle} tone={pending ? "red" : "blue"}/>
