@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { calculateAttendance, type PunchType } from "@/lib/attendance/calculation";
 import { buildShiftWindow } from "@/lib/attendance/shift-window";
 
-const dateSchema = z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/);
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 export async function calculateDailySummaries(formData: FormData) {
   const parsed = dateSchema.safeParse(formData.get("work_date"));
