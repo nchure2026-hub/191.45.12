@@ -27,28 +27,88 @@ export default function FacePunchCard({ companyId, employeeId, actions }: Props)
 
   useEffect(() => () => stream?.getTracks().forEach((track) => track.stop()), [stream]);
 
+  function describeCameraError(error: unknown) {
+    const name = error instanceof DOMException ? error.name : "";
+    if (!window.isSecureContext) {
+      return "Camera requires a secure HTTPS page. Open the official IAMS employee portal over HTTPS, then try again.";
+    }
+    if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+      return "Browser camera permission is blocked. In Edge/Chrome, click the lock/tune icon beside the address, open Site permissions, set Camera to Allow, then refresh this page. Also check Windows Settings → Privacy & security → Camera → Camera access and Let desktop apps access your camera.";
+    }
+    if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+      return "No camera was found. Connect/enable a webcam, or open this portal on a phone with a front camera.";
+    }
+    if (name === "NotReadableError" || name === "TrackStartError") {
+      return "The camera is already being used or blocked by another app. Close Windows Camera, Teams, Zoom, WhatsApp and other tabs using the camera, then try again.";
+    }
+    if (name === "OverconstrainedError" || name === "ConstraintNotSatisfiedError") {
+      return "The requested front camera is unavailable. Try another camera or use a phone with a front camera.";
+    }
+    if (name === "SecurityError") {
+      return "Browser security settings blocked camera access. Use the HTTPS portal and allow Camera in site settings.";
+    }
+    if (name === "AbortError") {
+      return "Camera startup was interrupted. Wait a moment and press Enable camera again.";
+    }
+    if (error instanceof Error && error.message) {
+      return "Camera error: " + error.message + " Check the browser's camera permission and close any app currently using the camera.";
+    }
+    return "The camera could not start. Allow Camera for this site, check Windows camera privacy settings, and close other apps using the camera.";
+  }
+
   async function startCamera() {
     setCameraError("");
     setFeedback(null);
+    setCameraReady(false);
+    let nextStream: MediaStream | null = null;
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setCameraError("This browser cannot access a camera. Open the portal using HTTPS in a supported browser.");
+      if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+        setCameraError("Camera access needs HTTPS and a browser with camera support. Open the official IAMS employee portal in Edge or Chrome.");
         return;
       }
       stream?.getTracks().forEach((track) => track.stop());
-      const nextStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 720 }, height: { ideal: 960 } },
-        audio: false,
+
+      try {
+        nextStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "user" }, width: { ideal: 720 }, height: { ideal: 960 } },
+          audio: false,
+        });
+      } catch (firstError) {
+        const name = firstError instanceof DOMException ? firstError.name : "";
+        if (name === "OverconstrainedError" || name === "NotFoundError") {
+          // Fallback for desktops/webcams without a front-facing camera.
+          nextStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } else {
+          throw firstError;
+        }
+      }
+
+      const video = videoRef.current;
+      if (!video || !nextStream) throw new Error("Camera opened but the preview could not be attached. Refresh the page and try again.");
+      video.srcObject = nextStream;
+      await new Promise<void>((resolve, reject) => {
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+          resolve();
+          return;
+        }
+        const cleanup = () => {
+          video.removeEventListener("loadedmetadata", onReady);
+          video.removeEventListener("error", onError);
+        };
+        const onReady = () => { cleanup(); resolve(); };
+        const onError = () => { cleanup(); reject(new Error("The camera stream did not load into the preview.")); };
+        video.addEventListener("loadedmetadata", onReady, { once: true });
+        video.addEventListener("error", onError, { once: true });
       });
       setStream(nextStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = nextStream;
-        await videoRef.current.play();
-      }
+      await video.play();
       setCameraReady(true);
-    } catch {
+    } catch (error) {
+      nextStream?.getTracks().forEach((track) => track.stop());
+      if (videoRef.current) videoRef.current.srcObject = null;
+      setStream(null);
       setCameraReady(false);
-      setCameraError("Camera permission was denied or the camera is unavailable. Allow camera access in your browser settings and try again.");
+      setCameraError(describeCameraError(error));
     }
   }
 
