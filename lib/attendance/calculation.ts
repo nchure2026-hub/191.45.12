@@ -18,7 +18,7 @@ export type AttendanceCalculation = {
   lateMinutes: number;
   earlyDepartureMinutes: number;
   overtimeMinutes: number;
-  status: "missing_punch" | "absent" | "half_day" | "present" | "late" | "overtime";
+  status: "missing_punch" | "exception" | "absent" | "half_day" | "present" | "late" | "overtime";
   exceptions: string[];
 };
 
@@ -76,7 +76,8 @@ export function calculateAttendance(punches: Punch[], policy: AttendancePolicy):
   const halfDayThreshold = Math.max(0, policy.halfDayBelowMinutes ?? Math.floor(policy.scheduledMinutes / 2));
 
   let status: AttendanceCalculation["status"] = "present";
-  if (!firstCheckIn || !lastCheckOut || exceptions.some((item) => item.includes("Out-of-order"))) status = "missing_punch";
+  if (!firstCheckIn || !lastCheckOut) status = "missing_punch";
+  else if (exceptions.length > 0) status = "exception";
   else if (workedMinutes === 0) status = "absent";
   else if (workedMinutes < halfDayThreshold) status = "half_day";
   else if (overtimeMinutes > 0) status = "overtime";
