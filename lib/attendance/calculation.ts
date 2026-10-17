@@ -76,7 +76,8 @@ export function calculateAttendance(punches: Punch[], policy: AttendancePolicy):
   const halfDayThreshold = Math.max(0, policy.halfDayBelowMinutes ?? Math.floor(policy.scheduledMinutes / 2));
 
   let status: AttendanceCalculation["status"] = "present";
-  if (!firstCheckIn || !lastCheckOut) status = "missing_punch";
+  if (sorted.length === 0) status = "absent";
+  else if (!firstCheckIn || !lastCheckOut) status = "missing_punch";
   else if (exceptions.length > 0) status = "exception";
   else if (workedMinutes === 0) status = "absent";
   else if (workedMinutes < halfDayThreshold) status = "half_day";
