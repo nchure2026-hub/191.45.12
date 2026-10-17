@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Activity, CalendarDays, CheckCircle2, Clock3, Factory, LogOut, UserRound, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import FacePunchCard, { type EmployeePunchType, type PunchChoice } from "./FacePunchCard";
+import EmployeeBadge from "./EmployeeBadge";
 
 function localDateKey(value: Date | string, timezone: string) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value));
@@ -138,6 +139,8 @@ export default async function EmployeePortalPage() {
           <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Today's check in</p><Clock3 className="text-amber-700" size={20}/></div><p className="mt-3 text-2xl font-bold">{formatTime(todayCheckIn, timezone)}</p><p className="mt-1 text-sm text-slate-500">Check out: {formatTime(todayCheckOut, timezone)}</p></div>
           <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Present days this month</p><CalendarDays className="text-amber-700" size={20}/></div><p className="mt-3 text-3xl font-bold">{presentDaysThisMonth}</p><p className="mt-1 text-sm text-slate-500">Based on recorded check-ins</p></div>
         </section>
+
+        <EmployeeBadge companyId={profile.company_id} employeeId={employee.id} employeeCode={employee.employee_code} fullName={displayName}/>
 
         {staleOpenShift && <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"><strong>Previous shift needs review.</strong> The most recent attendance session was not checked out within 18 hours. Please contact your supervisor to correct the record before punching again.</div>}
 
