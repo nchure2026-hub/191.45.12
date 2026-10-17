@@ -6,13 +6,13 @@ import { createClient } from "@/lib/supabase/server";
 
 const shiftSchema = z.object({
   name: z.string().trim().min(2).max(100),
-  code: z.string().trim().min(1).max(30).transform((value) => value.toUpperCase()),
+  code: z.string().trim().min(1).max(30).transform((value) => value.toUpperCase()).pipe(z.string().regex(/^[A-Z0-9_-]+$/)),
   plant_id: z.string().uuid(),
   start_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   end_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   break_minutes: z.coerce.number().int().min(0).max(600),
   grace_minutes: z.coerce.number().int().min(0).max(240),
-  overtime_after_minutes: z.union([z.string().regex(/^\\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
+  overtime_after_minutes: z.union([z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
 });
 
 async function getContext() {
@@ -34,7 +34,7 @@ export async function createShift(formData: FormData) {
     end_time: formData.get("end_time"),
     break_minutes: formData.get("break_minutes"),
     grace_minutes: formData.get("grace_minutes"),
-    overtime_after_minutes: formData.get("overtime_after_minutes") || "",
+  overtime_after_minutes: z.union([z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
   });
   if (!parsed.success) redirect("/shifts?error=invalid");
 
@@ -63,7 +63,7 @@ export async function createShift(formData: FormData) {
     grace_minutes: parsed.data.grace_minutes,
     scheduled_minutes: scheduled,
     overnight,
-    overtime_after_minutes: overtimeAfter,
+  overtime_after_minutes: z.union([z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(0).max(1440)), z.literal("")]).optional(),
     active: true,
   });
   if (error) {
