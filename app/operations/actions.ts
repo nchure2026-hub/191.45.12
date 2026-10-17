@@ -35,6 +35,12 @@ export async function createProductionUnit(formData: FormData) {
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) fail("unit_invalid");
   const { supabase, profile } = await context(["super_admin", "hr_manager"]);
+  const { data: plant } = await supabase.from("plants").select("id").eq("id", parsed.data.plant_id).eq("company_id", profile.company_id).eq("active", true).maybeSingle();
+  if (!plant) fail("plant_scope");
+  if (parsed.data.department_id) {
+    const { data: department } = await supabase.from("departments").select("id").eq("id", parsed.data.department_id).eq("company_id", profile.company_id).eq("plant_id", parsed.data.plant_id).eq("active", true).maybeSingle();
+    if (!department) fail("department_scope");
+  }
   const { error } = await supabase.from("production_units").insert({
     company_id: profile.company_id, plant_id: parsed.data.plant_id,
     department_id: parsed.data.department_id || null, name: parsed.data.name, code: parsed.data.code, active: true,
@@ -94,6 +100,12 @@ export async function createContractWorker(formData: FormData) {
   const { data: contractor } = await supabase.from("contractors").select("id").eq("id", parsed.data.contractor_id)
     .eq("company_id", profile.company_id).eq("active", true).maybeSingle();
   if (!contractor) fail("contractor_scope");
+  const { data: plant } = await supabase.from("plants").select("id").eq("id", parsed.data.plant_id).eq("company_id", profile.company_id).eq("active", true).maybeSingle();
+  if (!plant) fail("plant_scope");
+  if (parsed.data.department_id) {
+    const { data: department } = await supabase.from("departments").select("id").eq("id", parsed.data.department_id).eq("company_id", profile.company_id).eq("plant_id", parsed.data.plant_id).eq("active", true).maybeSingle();
+    if (!department) fail("department_scope");
+  }
   const { error } = await supabase.from("contract_workers").insert({
     company_id: profile.company_id, contractor_id: parsed.data.contractor_id, plant_id: parsed.data.plant_id,
     department_id: parsed.data.department_id || null, worker_code: parsed.data.worker_code,
@@ -121,6 +133,14 @@ export async function createVisitor(formData: FormData) {
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) fail("visitor_invalid");
   const { supabase, user, profile } = await context(["super_admin", "hr_manager", "plant_manager", "department_supervisor"]);
+  if (parsed.data.plant_id) {
+    const { data: plant } = await supabase.from("plants").select("id").eq("id", parsed.data.plant_id).eq("company_id", profile.company_id).eq("active", true).maybeSingle();
+    if (!plant) fail("plant_scope");
+  }
+  if (parsed.data.host_employee_id) {
+    const { data: host } = await supabase.from("employees").select("id,plant_id").eq("id", parsed.data.host_employee_id).eq("company_id", profile.company_id).eq("employment_status", "active").maybeSingle();
+    if (!host || (parsed.data.plant_id && host.plant_id !== parsed.data.plant_id)) fail("host_scope");
+  }
   const { error } = await supabase.from("visitors").insert({
     company_id: profile.company_id, visitor_name: parsed.data.visitor_name,
     plant_id: parsed.data.plant_id || null, organization: parsed.data.organization || null,
@@ -149,6 +169,10 @@ export async function createHoliday(formData: FormData) {
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) fail("holiday_invalid");
   const { supabase, profile } = await context(["super_admin", "hr_manager"]);
+  if (parsed.data.plant_id) {
+    const { data: plant } = await supabase.from("plants").select("id").eq("id", parsed.data.plant_id).eq("company_id", profile.company_id).eq("active", true).maybeSingle();
+    if (!plant) fail("plant_scope");
+  }
   const { error } = await supabase.from("holidays").insert({
     company_id: profile.company_id, holiday_date: parsed.data.holiday_date, name: parsed.data.name,
     plant_id: parsed.data.plant_id || null, paid: parsed.data.paid === "yes",
@@ -166,6 +190,10 @@ export async function createAttendanceDevice(formData: FormData) {
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) fail("device_invalid");
   const { supabase, profile } = await context(["super_admin", "hr_manager"]);
+  if (parsed.data.plant_id) {
+    const { data: plant } = await supabase.from("plants").select("id").eq("id", parsed.data.plant_id).eq("company_id", profile.company_id).eq("active", true).maybeSingle();
+    if (!plant) fail("plant_scope");
+  }
   const { error } = await supabase.from("attendance_devices").insert({
     company_id: profile.company_id, name: parsed.data.name, plant_id: parsed.data.plant_id || null,
     device_type: parsed.data.device_type, external_device_id: parsed.data.external_device_id || null,
