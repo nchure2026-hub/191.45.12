@@ -49,7 +49,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <div><label htmlFor="password" className="mb-2 block text-sm font-semibold text-slate-700">Password</label><input id="password" name="password" type="password" autoComplete="current-password" required maxLength={128} className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100" placeholder="Enter your password" /></div>
               <button type="submit" className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">Sign in securely</button>
             </form>
-            <p className="mt-6 text-xs leading-5 text-slate-500">Access is limited to authorized company users. Need an account? Contact your system administrator.</p>
+            <p className="mt-6 text-xs leading-5 text-slate-500">Access is limited to authorized company users. Need an account? Contact your system administrator.</p><div className="mt-5 rounded-xl border border-emerald-100 bg-emerald-50 p-4"><p className="text-sm font-bold text-emerald-900">Are you a worker?</p><p className="mt-1 text-xs leading-5 text-emerald-800">Use the dedicated employee portal to record attendance with a face photo.</p><Link href="/employee-portal/login" className="mt-3 inline-flex text-sm font-bold text-emerald-800 hover:underline">Open Worker Attendance Portal →</Link></div>
             <Link href="/login" className="sr-only">IAMS sign in</Link>
           </div>
         </section>
