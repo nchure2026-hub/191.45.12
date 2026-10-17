@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, AlertTriangle, ArrowDownToLine, ArrowLeft, CalendarDays, CheckCircle2, Clock3, FileSpreadsheet, ShieldCheck, Users } from "lucide-react";
+import { Activity, AlertTriangle, ArrowDownToLine, ArrowLeft, CalendarDays, CheckCircle2, FileSpreadsheet, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { calculateDailySummaries } from "./actions";
 
