@@ -23,7 +23,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 Dashboard values are live queries, but a newly created project may show zeros until authorized users, company, plants, employees, shifts and attendance records are provisioned. Do not use this system for payroll or disciplinary decisions until the relevant workflows and calculation policies are validated by the organization.
 
 ## Requirements
-- Node.js 20+
+- Node.js 22+ (required by the pinned Wrangler version)
 - npm
 - Supabase project
 
