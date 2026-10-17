@@ -9,6 +9,8 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 - Employee directory with scoped search, validated employee creation and safe deactivation (no destructive employee deletion).
 - Shift template creation/deactivation with validated shift times, break/grace policies and automatic overnight detection.
 - Separate `/employee-portal/login` and `/employee-portal` worker portal, linked employee credentials provisioned by HR/admin, mobile front-camera selfie capture per punch, check-in/break/check-out flow, and personal attendance history.
+- Admin Team & HR access page at `/team` to provision HR Manager, Plant Manager and Department Supervisor logins with work-email usernames, roles, and plant/department assignments.
+- Metal-manufacturing visual language for the worker punch station (graphite/steel surfaces, safety-amber actions) and camera permission help based on browser error codes.
 - Private Supabase Storage bucket for face-photo evidence and a server-validated transactional attendance punch function with allowed-transition checks.
 - Company-scoped RLS policies and role-aware database policies.
 - Additive schema for production units, attendance policies, holidays, contractors, contract workers, visitors, devices, import jobs and notifications.
@@ -18,7 +20,7 @@ A Next.js App Router + TypeScript foundation for multi-plant industrial attendan
 ## Not yet production-complete
 - Employee editing/transfers, shift editing/assignments, leave/overtime UI and server mutations.
 - Approved calculation-to-summary pipeline and shift/overnight-aware payroll-grade calculations. Worker punches are transactionally validated, but daily summary payroll processing is still not completed.
-- CSV upload workflow, actual biometric/RFID hardware integration, and automated facial identity matching. The worker portal currently captures a photo for attendance evidence; it does not claim to match a face against an enrolled biometric template.
+- CSV upload workflow, actual biometric/RFID hardware integration, and automated facial identity matching. The worker portal currently captures a photo for attendance evidence; it does not claim to match a face against an enrolled biometric template. Camera access also depends on the worker allowing camera permissions in their browser and operating system.
 - Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 - Custom email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
 
