@@ -6,21 +6,33 @@ export async function middleware(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
+  // The sign-in page should remain renderable while an administrator configures
+  // the project. The sign-in action gives a visible configuration error instead.
   if (!url || !key) return response;
 
-  const supabase = createServerClient(url, key, {
-    cookies: {
-      getAll: () => request.cookies.getAll(),
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+  try {
+    const supabase = createServerClient(url, key, {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        },
       },
-    },
-  });
+    });
 
-  // Refresh auth cookies before protected Server Components read the session.
-  await supabase.auth.getUser();
+    // Refresh auth cookies before protected Server Components read the session.
+    // Network/configuration failures must not crash every page request.
+    const { error } = await supabase.auth.getUser();
+    if (error) console.error("IAMS Supabase session refresh failed:", error.message);
+  } catch (error) {
+    console.error(
+      "IAMS Supabase middleware exception:",
+      error instanceof Error ? error.message : "Unknown middleware error",
+    );
+  }
+
   return response;
 }
 
