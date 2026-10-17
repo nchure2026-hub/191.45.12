@@ -1,64 +1,39 @@
-# ForgeOps — Industrial Attendance Management
+# IAMS — Industrial Attendance Management System
 
-A Next.js + TypeScript starter for an industrial workforce attendance platform. The UI uses the Deep Navy / Industrial Blue palette and is designed for multi-plant operations.
+A Next.js App Router + TypeScript foundation for multi-plant industrial attendance operations.
 
-## Current status
+## Implemented in Phase 1
+- Supabase Auth password sign-in and sign-out using server-side cookie handling.
+- Session refresh middleware.
+- Authenticated dashboard that reads company, employee, shift, daily-summary, leave-review, correction-review and raw-punch data from Supabase.
+- Company-scoped RLS policies and role-aware database policies.
+- Additive schema for production units, attendance policies, holidays, contractors, contract workers, visitors, devices, import jobs and notifications.
+- Pure attendance calculation module that reports missing/inconsistent punches instead of silently fabricating them.
+- Environment-variable example without credentials.
 
-### Implemented in this repository
-- Responsive dashboard starter and navigation shell
-- Attendance activity visualization (illustrative demo data)
-- Shift coverage summary (illustrative demo data)
-- Searchable recent-attendance table
-- Supabase browser client helper
-- TypeScript, Tailwind CSS v4 and Next.js configuration
+## Not yet production-complete
+- Employee/shift/leave/overtime CRUD screens and server mutations.
+- Approved calculation-to-summary pipeline and transactional punch processing.
+- CSV upload workflow and actual biometric/RFID device integration.
+- Email notification delivery, PDF export, automated end-to-end tests, backup drills and full security review.
+- Initial super-admin provisioning workflow.
 
-### Not implemented yet
-- Login, account provisioning and role/plant authorization
-- Live Supabase queries and mutations
-- Employee, shift, leave, overtime, contractor and visitor CRUD screens
-- CSV import/export, reporting and notifications
-- Biometric/RFID hardware integrations and device testing
-- Production security review and end-to-end tests
+Dashboard values are live queries, but a newly created project may show zeros until authorized users, company, plants, employees, shifts and attendance records are provisioned. Do not use this system for payroll or disciplinary decisions until the relevant workflows and calculation policies are validated by the organization.
 
-**Important:** Numbers and employee rows on the dashboard are demo-only. They are not real attendance records. Do not use this starter to make payroll or disciplinary decisions until the calculations, authorization and audit flows are implemented and tested.
-
-## Stack
-- Next.js App Router + TypeScript
-- Tailwind CSS v4
-- Supabase PostgreSQL and Auth (integration to be completed)
-- Recharts dependency reserved for live charts in a later implementation
+## Requirements
+- Node.js 20+
+- npm
+- Supabase project
 
 ## Local development
+1. Clone the repository and install dependencies: `npm install`.
+2. Copy `.env.example` to `.env.local`.
+3. Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` with the project URL and publishable/legacy anon key.
+4. Run `npm run dev` and open `http://localhost:3000`.
 
-1. Install Node.js 20 or newer.
-2. Clone this repository.
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Copy `.env.example` to `.env.local`.
-5. In the Supabase dashboard, open **Project Settings → API Keys** and copy the publishable key (or legacy anon key) into `NEXT_PUBLIC_SUPABASE_ANON_KEY`. The URL is already listed in the example file.
-6. Run:
-   ```bash
-   npm run dev
-   ```
-7. Open http://localhost:3000.
-
-Never place a Supabase service-role key in a `NEXT_PUBLIC_*` variable or commit it to Git.
-
-## Supabase project
-
-- Project: `industrial-attendance-management`
-- Region: Mumbai (`ap-south-1`)
-- Project ref: `nhchbztpqxtuxvmjwbsy`
-- Dashboard: https://supabase.com/dashboard/project/nhchbztpqxtuxvmjwbsy
-
-An initial schema was applied directly to this Supabase project for companies, profiles, plants, departments, employees, shifts, shift assignments, punches, daily summaries, leave, correction requests, overtime requests and audit logs. The schema still requires a reviewed, version-controlled migration and security testing before production use.
+## Database
+Project ref: `nhchbztpqxtuxvmjwbsy` (Mumbai / `ap-south-1`).
+Migration `phase_1_security_and_operations_schema` was applied to the connected project. The SQL migration should be kept in `supabase/migrations` and reviewed alongside future schema changes.
 
 ## Deployment
-
-Import this repository into Vercel or Netlify and configure:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-No deployment is created by this repository setup alone. Verify build output and configure the environment variables before publishing.
+Import this repository into a compatible Next.js host. Configure the two public Supabase environment variables in the host. Never expose a service-role key in browser code or commit real secrets.
