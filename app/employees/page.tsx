@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileMenu from "@/components/MobileMenu";
 import { redirect } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Building2, Search, UserPlus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -43,7 +44,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
   const successMessage = params.success ? successMessages[params.success] : undefined;
 
   return <main className="min-h-screen bg-slate-50 text-slate-900">
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-8"><Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"><ArrowLeft size={16}/> Dashboard</Link><div className="flex items-center gap-2 text-sm font-semibold"><Users size={18} className="text-blue-600"/> Employee directory</div><form action="/auth/signout" method="post"><button className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Sign out</button></form></header>
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-8"><MobileMenu/><Link href="/dashboard" className="hidden items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 md:inline-flex"><ArrowLeft size={16}/> Dashboard</Link><div className="flex min-w-0 items-center gap-2 text-sm font-semibold"><Users size={18} className="shrink-0 text-blue-600"/> <span>Employee directory</span></div><form action="/auth/signout" method="post" className="shrink-0"><button className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Sign out</button></form></header>
     <div className="mx-auto max-w-7xl p-4 sm:p-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-blue-700">Workforce</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Employee directory</h1><p className="mt-2 text-sm text-slate-500">Search employee records within your authorized company, plant and department scope.</p></div><div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm"><span className="text-slate-500">Records in scope</span><strong className="ml-3 text-lg">{filtered.length}</strong></div></div>
       {errorMessage && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</p>}

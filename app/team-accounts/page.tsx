@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileMenu from "@/components/MobileMenu";
 import { redirect } from "next/navigation";
 import { AlertTriangle, CheckCircle2, Factory, KeyRound, ShieldCheck, UserCog, UserPlus, Users, Wrench } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -84,11 +85,14 @@ export default async function TeamAccountsPage({ searchParams }: Props) {
     <main className="min-h-screen bg-[#f4f6f8] px-4 py-7 text-slate-900 sm:px-7">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
+          <div className="flex min-w-0 items-start gap-3">
+            <MobileMenu />
+            <div className="min-w-0">
             <Link href="/dashboard" className="text-sm font-semibold text-blue-700 hover:underline">← Admin dashboard</Link>
             <p className="mt-5 text-xs font-bold uppercase tracking-[.2em] text-slate-500">Metal manufacturing · Workforce administration</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight">Team Accounts</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Create individual logins for HR staff, plant managers and production, quality, maintenance, stores or dispatch supervisors. Each person gets their own username and assigned access scope.</p>
+            </div>
           </div>
           <Link href="/worker-accounts" className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"><Users size={17}/> Worker accounts</Link>
         </div>
