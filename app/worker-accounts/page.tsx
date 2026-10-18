@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MobileMenu from "@/components/MobileMenu";
 import { redirect } from "next/navigation";
 import { AlertTriangle, CheckCircle2, Factory, KeyRound, Plus, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -60,7 +61,7 @@ export default async function WorkerAccountsPage({ searchParams }: Props) {
     <main className="min-h-screen bg-slate-50 px-4 py-7 text-slate-900 sm:px-7">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div><Link href="/dashboard" className="text-sm font-semibold text-blue-700 hover:underline">← Admin dashboard</Link><p className="mt-5 text-xs font-bold uppercase tracking-[.18em] text-emerald-700">Workforce administration</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Worker accounts</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Create a worker record and login together. Workers use a separate portal to capture their face photo and record check-in, breaks and check-out.</p></div>
+          <div className="flex min-w-0 items-start gap-3"><MobileMenu/><div className="min-w-0"><Link href="/dashboard" className="text-sm font-semibold text-blue-700 hover:underline">← Admin dashboard</Link><p className="mt-5 text-xs font-bold uppercase tracking-[.18em] text-emerald-700">Workforce administration</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Worker accounts</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Create a worker record and login together. Workers use a separate portal to capture their face photo and record check-in, breaks and check-out.</p></div></div>
           <Link href="/employee-portal/login" className="inline-flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-800 hover:bg-emerald-50"><UserPlus size={17}/> Open worker portal</Link>
         </div>
 
